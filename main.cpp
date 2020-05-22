@@ -15,6 +15,20 @@
 5.+Мне очень не нравятся твои for() во всех функциях, обычно по списку идут while  до NULL
    Хорошо идём!
 
+
+Уже лучше:
+*+Функцию L_pop_front можно упростить, выкинуть if, разберись почему будет работать.
+* L_pop, L_popA, L_del -элемент ищем по id
+  (в список, после элемента с ид = 5, вставить элемент с ид = 8 и т.д.)
+
+* L_del1 чем тебе такой вариант плох : L1=L; L=L->next; delete L1;?
+* А если у тебя не только поле id, а к нему прилагается еще 100 полей, ты их все будешь копировать?
+  Эта функция должна возвращать поле id в качестве результата.
+
+* Нет функции удалить последний элемент списка.
+
+
+
 Индивид. задание:
    По списку L построить два списка: L1 - из положительных элементов и L2 – из отрицательных.
 
@@ -46,20 +60,25 @@ void L_print(list *L) { // вывод на экран
     printf("]\n");
 }
 
-void L_pop_front(list *&L, int v) { // вставить число v в начало списка L
-    if( L==NULL) {
-        L = new link;
-        L->id = v;
-        L->next = NULL;
-        return;
+int L_find(list *L, int v) { // номер числа v в списке L, или -1
+    int i = 0;
+    while(L!=NULL) {
+        if(L->id==v) return i;
+        L = L->next;
+        i++;
     }
+    return -1;
+}
+
+void L_pop_front(list *&L, int v) { // вставить число v в начало списка L
     link *L1 = new link;
     L1->id = v;
     L1->next = L;
     L = L1;
 }
 
-void L_pop(list *&L, int i, int v) { // вставить число v перед номером i в списке L
+// Прежняя версия:
+void L_pop0(list *&L, int i, int v) { // вставить число v перед номером i в списке L
     if( L==NULL) {
         L = new link;
         L->id = v;
@@ -78,7 +97,13 @@ void L_pop(list *&L, int i, int v) { // вставить число v перед номером i в списк
     L_pop_front(L0, v);
     L1->next = L0;
 }
-void L_popA(list *&L, int i, int v) { // вставить число v ПОСЛЕ номера i в списке L
+
+void L_pop(list *&L, int v0, int v1) { // вставить число v1 перед числом v0 в списке L
+    int i = L_find(L, v0);
+    if( i>=0) L_pop0(L, i, v1);
+}
+
+void L_popA0(list *&L, int i, int v) { // вставить число v ПОСЛЕ номера i в списке L
     if( L==NULL) {
         L = new link;
         L->id = v;
@@ -92,6 +117,10 @@ void L_popA(list *&L, int i, int v) { // вставить число v ПОСЛЕ номера i в списк
     }
     L_pop_front(L0, v);
     L1->next = L0;
+}
+void L_popA(list *&L, int v0, int v1) { // вставить число v1 ПОСЛЕ числа v0 в списке L
+    int i = L_find(L, v0);
+    if( i>=0) L_popA0(L, i, v1);
 }
 void L_popE(list *&L, int v) { // вставить число v в хвост списка L
     if( L==NULL) {
@@ -136,11 +165,9 @@ int main()
 {
     list *L=NULL, *M1=NULL, *M2=NULL;
 
-    for(int i=0;i<10;i++){
-
-        L_pop_front(L, rand()%10-5);
+    for (int i=0;i<10;i++){
+        L_popE(L,rand()%10-5);
     }
-
     L_print(L);
 
     /*
