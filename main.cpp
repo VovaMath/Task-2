@@ -142,6 +142,21 @@ void L_del1(list *&L) { // удалить первый элемент
     L->next = L1->next;
     delete L1;
 }
+void L_del_last(list *&L) { // удалить последний элемент
+    if( L->next==NULL) {
+        delete L;
+        L = NULL;
+        return;
+    }
+    link *L0 = L;
+    link *L1 = L0->next;
+    while(L1->next != NULL) {
+        L0 = L1;
+        L1 = L1->next;
+    }
+    L0->next = NULL;
+    delete L1;
+}
 void L_del(list *L, int i) { // удалить i-й элемент
     for( int j=0; j<i; j++) {
         if( (L = L->next)==NULL) return;  // ошибка
@@ -164,33 +179,10 @@ void Indi(list *L,list *&M1,list *&M2) {
 int main()
 {
     list *L=NULL, *M1=NULL, *M2=NULL;
-
     for (int i=0;i<10;i++){
         L_popE(L,rand()%10-5);
     }
     L_print(L);
-
-    /*
-    int k, r;
-    for(int i=0; i<10; i++)
-        printf("%d\n", rand()%100);
-
-    bool first = true;
-    do {
-        printf("Value (0 - break):");
-        int r = scanf("%d", &k);
-        //printf("r=%d, k=%d\n", r, k);
-        if(r !=1) break;
-        if(first) {
-            L_start(&L, k);
-            first = false;
-        } else {
-            L_popE(&L, k);
-        }
-    } while(k != 0);
-
-    L_print(&L);
-    */
     int k, r, action;
     do {
         printf("\n0: Exit\n"
@@ -199,8 +191,9 @@ int main()
                "3: Insert before the elem.\n"
                "4: Insert after the elem.\n"
                "5: Delete first element\n"
-               "6: Delete element\n"
-               "7: indiv: L-> (L+), (L-) \n>");
+               "6: Delete last element\n"
+               "7: Delete element\n"
+               "8: indiv: L-> (L+), (L-) \n>");
         cin>>action;
         if(action==0) break;
         if(action==1) {
@@ -241,13 +234,18 @@ int main()
             continue;
         }
         if(action==6) {
+            L_del_last(L);
+            L_print(L);
+            continue;
+        }
+        if(action==7) {
             printf("Enter index");
             scanf("%d",&r);
             L_del(L, r);
             L_print(L);
             continue;
         }
-        if(action==7) {
+        if(action==8) {
             printf("L :"); L_print(L);
             Indi(L, M1, M2);
             printf(">0:"); L_print(M1);
