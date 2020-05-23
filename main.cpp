@@ -92,7 +92,14 @@ void L_pop0(list *&L, int i, int v) { // вставить число v перед номером i в спис
     link *L0=L, *L1;
     for( int j=0; j<i; j++) {
         L1 = L0;
-        if( (L0 = L0->next)==NULL) break;  // дошли до конца
+        if( (L0 = L0->next)==NULL) { // дошли до конца
+            // теперь надо вставить число  v в конец списка L1, когда L1->next=NULL
+            link *L2 = new link;
+            L1->next = L2;
+            L2->next = NULL;
+            L2->id   = v;
+            return;
+        }
     }
     L_pop_front(L0, v);
     L1->next = L0;
@@ -113,14 +120,21 @@ void L_popA0(list *&L, int i, int v) { // вставить число v ПОСЛЕ номера i в спис
     link *L0=L, *L1;
     for( int j=0; j<=i; j++) {
         L1 = L0;
-        if( (L0 = L0->next)==NULL) break;  // дошли до конца
+        if( (L0 = L0->next)==NULL) { // дошли до конца
+            // теперь надо вставить число  v в конец списка L1, когда L1->next=NULL
+            link *L2 = new link;
+            L1->next = L2;
+            L2->next = NULL;
+            L2->id   = v;
+            return;
+        }
     }
     L_pop_front(L0, v);
     L1->next = L0;
 }
 void L_popA(list *&L, int v0, int v1) { // вставить число v1 ПОСЛЕ числа v0 в списке L
     int i = L_find(L, v0);
-    if( i>=0) L_popA0(L, i, v1);
+    if( i>=0) L_popA0(L, i+1, v1);
 }
 void L_popE(list *&L, int v) { // вставить число v в хвост списка L
     if( L==NULL) {
@@ -157,11 +171,18 @@ void L_del_last(list *&L) { // удалить последний элемент
     L0->next = NULL;
     delete L1;
 }
-void L_del(list *L, int i) { // удалить i-й элемент
+void L_delN(list *L, int i) { // удалить i-й элемент
+    link *L0 = L;
     for( int j=0; j<i; j++) {
+        L0 = L;
         if( (L = L->next)==NULL) return;  // ошибка
     }
-    L_del1(L);
+    if( L->next==NULL) L_del_last(L0);
+    else               L_del1(L);
+}
+void L_del(list *L, int v) { // удалить элемент v
+    int i = L_find(L, v);
+    if( i>=0) L_delN(L, i);
 }
 // Индивидуальное задание: из списка L построить списки M1 и M2 из отриц. и полож. элементов
 void Indi(list *L,list *&M1,list *&M2) {
@@ -180,7 +201,7 @@ int main()
 {
     list *L=NULL, *M1=NULL, *M2=NULL;
     for (int i=0;i<10;i++){
-        L_popE(L,rand()%10-5);
+        L_popE(L,rand()%40-20);
     }
     L_print(L);
     int k, r, action;
@@ -197,34 +218,34 @@ int main()
         cin>>action;
         if(action==0) break;
         if(action==1) {
-            printf("Enter number");
+            printf("Enter number ");
             scanf("%d",&k);
             L_pop_front(L, k);
             L_print(L);
             continue;
         }
         if(action==2) {
-            printf("Enter number");
+            printf("Enter number ");
             scanf("%d",&k);
             L_popE(L, k);
             L_print(L);
             continue;
         }
         if(action==3) {
-            printf("Enter index");
+            printf("Enter value ");
             scanf("%d",&r);
-            printf("Enter number");
+            printf("Enter number ");
             scanf("%d",&k);
             L_pop(L, r, k);
             L_print(L);
             continue;
         }
         if(action==4) {
-            printf("Enter index");
+            printf("Enter value ");
             scanf("%d",&r);
-            printf("Enter number");
+            printf("Enter number ");
             scanf("%d",&k);
-            L_pop(L, r+1, k);
+            L_popA(L, r, k);
             L_print(L);
             continue;
         }
@@ -239,7 +260,7 @@ int main()
             continue;
         }
         if(action==7) {
-            printf("Enter index");
+            printf("Enter value ");
             scanf("%d",&r);
             L_del(L, r);
             L_print(L);
